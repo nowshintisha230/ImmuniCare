@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminAuth } from "@/lib/firebase-admin";
 
-export const runtime = "nodejs";
+
 
 const COOKIE_NAME = "session";
 const EXPIRES_IN = 60 * 60 * 24 * 5 * 1000; // 5 days
