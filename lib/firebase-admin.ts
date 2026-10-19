@@ -18,4 +18,6 @@ function getAdminApp() {
   });
 }
 
-export const adminAuth = getAuth(getAdminApp());
+export function getAdminAuth() {
+  return getAuth(getAdminApp());
+}

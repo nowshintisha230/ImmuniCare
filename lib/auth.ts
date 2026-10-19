@@ -1,14 +1,15 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminAuth } from "@/lib/firebase-admin";
+import { getAdminAuth } from "@/lib/firebase-admin";
 import { prisma } from "@/lib/prisma";
+import { SESSION_COOKIE } from "@/lib/session";
 
 export async function getCurrentUser() {
-  const sessionCookie = (await cookies()).get("session")?.value;
+  const sessionCookie = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!sessionCookie) return null;
 
   try {
-    const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
+    const decoded = await getAdminAuth().verifySessionCookie(sessionCookie, true);
 
     return await prisma.user.upsert({
       where: { firebaseUid: decoded.uid },
