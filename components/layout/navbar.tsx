@@ -19,27 +19,26 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
         <Logo />
 
-        {/* Desktop */}
-<NavLinks className="hidden items-center gap-4 2xl:flex" />
-<div className="hidden shrink-0 items-center gap-2 2xl:flex">
+     {/* Desktop */}
+<NavLinks className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5" />
+<div className="hidden shrink-0 items-center gap-2 lg:flex">
   <LanguageToggle />
   <AuthActions className="flex items-center gap-2" />
 </div>
 
 {/* Mobile / tablet */}
-<div className="flex items-center gap-2 2xl:hidden">
-          <LanguageToggle />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={t("ui.menu")}
-            onClick={() => setOpen(true)}
-          >
-            <Menu className="size-5" />
-          </Button>
-        </div>
-      </div>
+<div className="flex items-center gap-2 lg:hidden">
+  <LanguageToggle />
+  <Button
+    type="button"
+    variant="outline"
+    size="icon"
+    aria-label={t("ui.menu")}
+    onClick={() => setOpen(true)}
+  >
+    <Menu className="size-5" />
+  </Button>
+</div>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right">
