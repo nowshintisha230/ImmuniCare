@@ -8,8 +8,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "idToken required" }, { status: 400 });
     }
     return await attachSessionCookie(NextResponse.json({ ok: true }), idToken);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("session error:", error);
+    return NextResponse.json({ error: "Session failed" }, { status: 500 });
   }
 }
 
