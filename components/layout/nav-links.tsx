@@ -25,7 +25,10 @@ export function NavLinks({ className, linkClassName, onNavigate }: Props) {
           key={item.href}
           href={item.href}
           onClick={onNavigate}
-          className={cn("text-sm font-medium text-muted-foreground transition-colors hover:text-foreground", linkClassName)}
+          className={cn(
+  "whitespace-nowrap text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+  linkClassName,
+)}
         >
           {t(item.labelKey)}
         </Link>

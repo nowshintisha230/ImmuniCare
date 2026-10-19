@@ -20,14 +20,14 @@ export function Navbar() {
         <Logo />
 
         {/* Desktop */}
-        <NavLinks className="hidden items-center gap-5 xl:flex" />
-        <div className="hidden items-center gap-2 xl:flex">
-          <LanguageToggle />
-          <AuthActions className="flex items-center gap-2" />
-        </div>
+<NavLinks className="hidden items-center gap-4 2xl:flex" />
+<div className="hidden shrink-0 items-center gap-2 2xl:flex">
+  <LanguageToggle />
+  <AuthActions className="flex items-center gap-2" />
+</div>
 
-        {/* Mobile */}
-        <div className="flex items-center gap-2 xl:hidden">
+{/* Mobile / tablet */}
+<div className="flex items-center gap-2 2xl:hidden">
           <LanguageToggle />
           <Button
             type="button"

@@ -35,7 +35,7 @@ export function AuthActions({ className, onNavigate }: Props) {
   if (user) {
     return (
       <div className={className}>
-        <Button type="button" variant="outline" size="sm" onClick={handleLogout}>
+        <Button type="button" variant="outline" size="sm" onClick={handleLogout} className="whitespace-nowrap">
           {t("auth.logout")}
         </Button>
       </div>
@@ -44,10 +44,10 @@ export function AuthActions({ className, onNavigate }: Props) {
 
   return (
     <div className={className}>
-      <Link href="/login" onClick={onNavigate} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+      <Link href="/login" onClick={onNavigate} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "whitespace-nowrap")}>
         {t("auth.login")}
       </Link>
-      <Link href="/register" onClick={onNavigate} className={buttonVariants({ size: "sm" })}>
+      <Link href="/register" onClick={onNavigate} className={cn(buttonVariants({ size: "sm" }), "whitespace-nowrap")}>
         {t("auth.register")}
       </Link>
     </div>
