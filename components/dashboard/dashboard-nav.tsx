@@ -24,13 +24,14 @@ const ICONS: Record<Tab, LucideIcon> = {
 
 type Props = { value: Tab; onChange: (tab: Tab) => void; notificationCount: number };
 
+/** Desktop sidebar. On mobile the BottomNav is used instead. */
 export function DashboardNav({ value, onChange, notificationCount }: Props) {
   const { l } = useLanguage();
 
   return (
     <nav
       aria-label={l(DASH.title)}
-      className="flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:flex-col lg:gap-1 lg:overflow-visible lg:rounded-xl lg:border lg:bg-card lg:p-2 lg:pb-2"
+      className="hidden lg:sticky lg:top-20 lg:flex lg:flex-col lg:gap-1 lg:self-start lg:rounded-xl lg:border lg:bg-card lg:p-2"
     >
       {TABS.map((tab) => {
         const Icon = ICONS[tab];
@@ -42,10 +43,10 @@ export function DashboardNav({ value, onChange, notificationCount }: Props) {
             aria-current={active ? "page" : undefined}
             onClick={() => onChange(tab)}
             className={cn(
-              "flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors lg:w-full lg:border-transparent",
+              "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
               active
-                ? "border-primary bg-primary font-bold text-primary-foreground shadow-sm"
-                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground lg:bg-transparent",
+                ? "bg-primary font-bold text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             <Icon className="size-4" />

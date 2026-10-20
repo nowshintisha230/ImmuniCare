@@ -1,5 +1,8 @@
 "use client";
 
+
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 import { useAuthUser } from "@/hooks/use-auth-user";
@@ -30,6 +33,7 @@ function Column({ title, links }: { title: string; links: FooterLink[] }) {
 }
 
 export function Footer() {
+      const pathname = usePathname();
   const { l, t } = useLanguage();
   const { user } = useAuthUser();
 
@@ -53,7 +57,7 @@ export function Footer() {
       ];
 
   return (
-    <footer className="border-t bg-card">
+        <footer className={cn("border-t bg-card", pathname.startsWith("/dashboard") && "max-lg:hidden")}>
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-3">
           <Logo />

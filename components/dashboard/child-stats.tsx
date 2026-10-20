@@ -57,38 +57,38 @@ export function ChildOverviewCard({ child }: { child: ChildView }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                <div className="grid grid-cols-6 gap-2 sm:gap-3 lg:grid-cols-5">
           <Tile
             icon={Syringe}
             label={l(DASH.stats.totalVaccines)}
             value={TOTALS.vaccines.all}
             sub={fill(l(DASH.breakdown), { gov: TOTALS.vaccines.government, priv: TOTALS.vaccines.private })}
-            className="bg-muted text-foreground"
+            className="col-span-3 bg-muted text-foreground lg:col-span-1"
           />
           <Tile
             icon={Layers}
             label={l(DASH.stats.totalDoses)}
             value={stats.total}
             sub={fill(l(DASH.breakdown), { gov: TOTALS.doses.government, priv: TOTALS.doses.private })}
-            className="bg-muted text-foreground"
+            className="col-span-3 bg-muted text-foreground lg:col-span-1"
           />
           <Tile
             icon={CheckCircle2}
             label={l(DASH.stats.completed)}
             value={stats.completed}
-            className="bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
+            className="col-span-2 bg-emerald-50 text-emerald-800 lg:col-span-1 dark:bg-emerald-950/40 dark:text-emerald-300"
           />
           <Tile
             icon={Clock}
             label={l(DASH.stats.due)}
             value={stats.due}
-            className="bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300"
+            className="col-span-2 bg-red-50 text-red-800 lg:col-span-1 dark:bg-red-950/40 dark:text-red-300"
           />
           <Tile
             icon={CalendarClock}
             label={l(DASH.stats.upcoming)}
             value={stats.upcoming}
-            className="bg-sky-50 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300"
+            className="col-span-2 bg-sky-50 text-sky-800 lg:col-span-1 dark:bg-sky-950/40 dark:text-sky-300"
           />
         </div>
 

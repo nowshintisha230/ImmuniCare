@@ -127,9 +127,10 @@ export function ChildSchedule({ items, onChange, initialChildId, initialStatus =
     <div className="flex flex-col gap-4">
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          <div className="flex flex-wrap items-center gap-3">
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
             <NativeSelect
               aria-label={l(DASH.schedule.child)}
+                            className="col-span-2 sm:col-span-1"
               value={child.id}
               onChange={(e) => {
                 setChildId(e.target.value);
@@ -141,7 +142,7 @@ export function ChildSchedule({ items, onChange, initialChildId, initialStatus =
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </NativeSelect>
-            <div className="relative min-w-48 flex-1">
+                       <div className="relative col-span-2 min-w-48 sm:col-span-1 sm:flex-1">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 className="pl-9"
@@ -171,12 +172,13 @@ export function ChildSchedule({ items, onChange, initialChildId, initialStatus =
             </NativeSelect>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+                    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
             {chips.map((chip) => (
               <Button
                 key={chip.value}
                 type="button"
                 size="sm"
+                className="shrink-0"
                 variant={status === chip.value ? "default" : "outline"}
                 onClick={() => setStatus(chip.value)}
               >
