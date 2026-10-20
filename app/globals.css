@@ -103,3 +103,6 @@
 html[lang="bn"] body {
   font-family: var(--font-bengali), var(--font-geist-sans), sans-serif;
 }
+html {
+  scroll-behavior: smooth;
+}

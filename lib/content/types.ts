@@ -1,0 +1,1 @@
+export type Localized = { en: string; bn: string };

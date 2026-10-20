@@ -1,12 +1,14 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import type { Localized } from "@/lib/content/types";
 import { dictionary, type Language, type TranslationKey } from "@/lib/i18n/dictionary";
 
 type LanguageContextValue = {
   language: Language;
   toggleLanguage: () => void;
   t: (key: TranslationKey) => string;
+  l: (value: Localized) => string;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -33,12 +35,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguage((prev) => (prev === "en" ? "bn" : "en"));
   }, []);
 
-  const t = useCallback(
-    (key: TranslationKey) => dictionary[language][key],
-    [language],
-  );
+  const t = useCallback((key: TranslationKey) => dictionary[language][key], [language]);
+  const l = useCallback((value: Localized) => value[language], [language]);
 
-  const value = useMemo(() => ({ language, toggleLanguage, t }), [language, toggleLanguage, t]);
+  const value = useMemo(
+    () => ({ language, toggleLanguage, t, l }),
+    [language, toggleLanguage, t, l],
+  );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
