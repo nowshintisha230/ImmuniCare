@@ -6,6 +6,8 @@ The schedule follows the Bangladesh government **EPI** programme (7 vaccines) an
 
 > ImmuniCare gives general information, not medical advice. It is not an official vaccination certificate. Always follow the guidance of your vaccinator or doctor.
 
+## Live Link: https://immuni-care.vercel.app/
+
 ## Features
 
 - **Authentication:** email/password and Google sign-in (Firebase), with a secure server-side session cookie.
