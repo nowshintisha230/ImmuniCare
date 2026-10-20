@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import {
+  collectRecords,
+  EMPTY_RECORDS,
+  InitialRecordsField,
+  type RecordsValue,
+} from "@/components/dashboard/initial-records-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/components/providers/language-provider";
-import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { useTodayKey } from "@/hooks/use-today";
 import { getAuthErrorKey, registerWithEmail } from "@/lib/auth-client";
+import { DASH } from "@/lib/content/dashboard";
+import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { checkRecords } from "@/lib/vaccination/records";
+import { startOfTodayDhaka, toDateKey } from "@/lib/vaccination/status";
 import { registerSchema } from "@/lib/validations/auth";
 import { AuthShell } from "./auth-shell";
 import { FormField } from "./form-field";
@@ -31,16 +41,14 @@ const selectClass =
   "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
 
 export function RegisterForm() {
-  const { t } = useLanguage();
+  const { t, l } = useLanguage();
   const router = useRouter();
+  const today = useTodayKey();
   const [values, setValues] = useState<Values>(INITIAL);
+  const [records, setRecords] = useState<RecordsValue>(EMPTY_RECORDS);
+  const [recordsError, setRecordsError] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
-  const [today, setToday] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    setToday(new Date().toISOString().split("T")[0]);
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   function bind(name: keyof Values) {
     return {
@@ -56,6 +64,7 @@ export function RegisterForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     const parsed = registerSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
@@ -65,11 +74,21 @@ export function RegisterForm() {
       setErrors(next);
       return;
     }
-
     setErrors({});
+
+    const list = records.enabled ? collectRecords(records) : [];
+    const problem = list.length
+      ? checkRecords(parsed.data.dateOfBirth, list, toDateKey(startOfTodayDhaka()))
+      : null;
+    if (problem) {
+      setRecordsError(l(DASH.records.errors[problem]));
+      return;
+    }
+    setRecordsError(undefined);
+
     setLoading(true);
     try {
-      await registerWithEmail(parsed.data);
+      await registerWithEmail(parsed.data, list);
       toast.success(t("auth.registerSuccess"));
       router.replace("/dashboard");
       router.refresh();
@@ -114,6 +133,14 @@ export function RegisterForm() {
               </select>
             </FormField>
           </div>
+
+          <InitialRecordsField
+            value={records}
+            onChange={setRecords}
+            dob={values.dateOfBirth}
+            todayKey={today}
+            error={recordsError}
+          />
         </fieldset>
 
         <fieldset className="flex flex-col gap-4">

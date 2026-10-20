@@ -1,4 +1,5 @@
-import type { DoseView, Stats } from "@/lib/vaccination/status";
+import type { DoseType } from "@/lib/vaccination/doses";
+import type { AgeParts, DoseView, Stats } from "@/lib/vaccination/status";
 
 export type ChildView = {
   id: string;
@@ -6,19 +7,32 @@ export type ChildView = {
   dateOfBirth: string;
   sex: "MALE" | "FEMALE" | "OTHER";
   ageMonths: number;
+  age: AgeParts;
   doses: DoseView[];
   stats: Stats;
 };
 
-export type NotificationView = {
-  id: string;
-  childId: string;
-  childName: string;
-  vaccine: string;
-  doseNumber: number;
-  dueDate: string;
-  daysUntil: number;
-};
+export type NotificationView =
+  | {
+      kind: "upcoming";
+      id: string;
+      childId: string;
+      childName: string;
+      vaccine: string;
+      doseNumber: number;
+      dueDate: string;
+      daysUntil: number;
+      optional: boolean;
+    }
+  | {
+      kind: "overdue";
+      id: string;
+      childId: string;
+      childName: string;
+      doseType: DoseType;
+      count: number;
+      vaccines: string[];
+    };
 
 export type MyFeedbackView = {
   id: string;
@@ -31,7 +45,6 @@ export type MyFeedbackView = {
 export type DashboardData = {
   user: { name: string | null; email: string; phone: string | null };
   children: ChildView[];
-  summary: Stats & { children: number; totalVaccines: number };
   notifications: NotificationView[];
   feedback: MyFeedbackView[];
 };

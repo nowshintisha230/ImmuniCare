@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { FormField } from "@/components/auth/form-field";
 import { Button } from "@/components/ui/button";
@@ -8,22 +8,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { useLanguage } from "@/components/providers/language-provider";
+import { useTodayKey } from "@/hooks/use-today";
 import { DASH } from "@/lib/content/dashboard";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { checkRecords } from "@/lib/vaccination/records";
+import { startOfTodayDhaka, toDateKey } from "@/lib/vaccination/status";
 import { childSchema } from "@/lib/validations/dashboard";
+import {
+  collectRecords,
+  EMPTY_RECORDS,
+  InitialRecordsField,
+  type RecordsValue,
+} from "./initial-records-field";
 
 const INITIAL = { childName: "", dateOfBirth: "", sex: "" };
 
 export function AddChildForm({ onAdded }: { onAdded: () => void | Promise<void> }) {
   const { t, l } = useLanguage();
+  const today = useTodayKey();
   const [values, setValues] = useState(INITIAL);
+  const [records, setRecords] = useState<RecordsValue>(EMPTY_RECORDS);
+  const [recordsError, setRecordsError] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [today, setToday] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    setToday(new Date().toISOString().split("T")[0]);
-  }, []);
 
   const set = (name: keyof typeof INITIAL) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setValues((v) => ({ ...v, [name]: e.target.value }));
@@ -32,6 +39,7 @@ export function AddChildForm({ onAdded }: { onAdded: () => void | Promise<void> 
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     const parsed = childSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
@@ -39,14 +47,24 @@ export function AddChildForm({ onAdded }: { onAdded: () => void | Promise<void> 
       setErrors(next);
       return;
     }
-
     setErrors({});
+
+    const list = records.enabled ? collectRecords(records) : [];
+    const problem = list.length
+      ? checkRecords(parsed.data.dateOfBirth, list, toDateKey(startOfTodayDhaka()))
+      : null;
+    if (problem) {
+      setRecordsError(l(DASH.records.errors[problem]));
+      return;
+    }
+    setRecordsError(undefined);
+
     setLoading(true);
     try {
       const res = await fetch("/api/children", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({ ...parsed.data, records: list }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -55,6 +73,7 @@ export function AddChildForm({ onAdded }: { onAdded: () => void | Promise<void> 
       }
       toast.success(l(DASH.children.added));
       setValues(INITIAL);
+      setRecords(EMPTY_RECORDS);
       await onAdded();
     } catch {
       toast.error(t("error.generic"));
@@ -86,6 +105,17 @@ export function AddChildForm({ onAdded }: { onAdded: () => void | Promise<void> 
               <option value="OTHER">{t("auth.other")}</option>
             </NativeSelect>
           </FormField>
+
+          <div className="sm:col-span-2">
+            <InitialRecordsField
+              value={records}
+              onChange={setRecords}
+              dob={values.dateOfBirth}
+              todayKey={today}
+              error={recordsError}
+            />
+          </div>
+
           <div className="sm:col-span-2">
             <Button type="submit" disabled={loading}>
               {loading ? l(DASH.children.saving) : l(DASH.children.save)}

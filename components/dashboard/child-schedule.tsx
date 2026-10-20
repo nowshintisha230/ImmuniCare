@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,19 +13,27 @@ import { DASH, fill } from "@/lib/content/dashboard";
 import { VACCINES } from "@/lib/content/vaccine-info";
 import type { ChildView } from "@/lib/dashboard/types";
 import { formatDateKey } from "@/lib/format";
+import type { DoseType } from "@/lib/vaccination/doses";
 import type { DoseStatus, DoseView } from "@/lib/vaccination/status";
 import { cn } from "@/lib/utils";
 import { ProgressBar } from "./progress-bar";
 import { StatusBadge } from "./status-badge";
 
 type StatusFilter = "all" | DoseStatus;
-type Props = { items: ChildView[]; onChange: () => void | Promise<void> };
+type TypeFilter = "all" | DoseType;
+type Props = {
+  items: ChildView[];
+  onChange: () => void | Promise<void>;
+  initialChildId?: string;
+  initialStatus?: StatusFilter;
+};
 
-export function ChildSchedule({ items, onChange }: Props) {
+export function ChildSchedule({ items, onChange, initialChildId, initialStatus = "all" }: Props) {
   const { t, l, language } = useLanguage();
-  const [childId, setChildId] = useState("");
+  const [childId, setChildId] = useState(initialChildId ?? "");
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("all");
+  const [status, setStatus] = useState<StatusFilter>(initialStatus);
+  const [type, setType] = useState<TypeFilter>("all");
   const [vaccine, setVaccine] = useState("all");
   const [marking, setMarking] = useState<string | null>(null);
   const [markDate, setMarkDate] = useState("");
@@ -42,12 +51,13 @@ export function ChildSchedule({ items, onChange }: Props) {
     const q = query.trim().toLowerCase();
     return child.doses.filter((d) => {
       if (status !== "all" && d.status !== status) return false;
+      if (type !== "all" && d.type !== type) return false;
       if (vaccine !== "all" && d.vaccine !== vaccine) return false;
       if (!q) return true;
       const info = VACCINES[d.vaccine];
       return [d.name, d.code, info.protects.en, info.protects.bn].some((s) => s.toLowerCase().includes(q));
     });
-  }, [child, query, status, vaccine]);
+  }, [child, query, status, type, vaccine]);
 
   if (!child) {
     return <p className="text-sm text-muted-foreground">{l(DASH.children.empty)}</p>;
@@ -57,6 +67,7 @@ export function ChildSchedule({ items, onChange }: Props) {
 
   function note(d: DoseView) {
     if (d.status === "completed" && d.givenAt) return fill(l(DASH.schedule.givenOn), { date: fmt(d.givenAt) });
+    if (d.status === "missed") return l(DASH.schedule.missedNote);
     if (d.daysUntil === 0) return l(DASH.schedule.dueToday);
     if (d.daysUntil < 0) return fill(l(DASH.schedule.overdueBy), { days: -d.daysUntil, date: fmt(d.dueDate) });
     return fill(l(DASH.schedule.dueIn), { days: d.daysUntil, date: fmt(d.dueDate) });
@@ -107,6 +118,9 @@ export function ChildSchedule({ items, onChange }: Props) {
     { value: "due", label: l(DASH.status.due), count: child.stats.due },
     { value: "upcoming", label: l(DASH.status.upcoming), count: child.stats.upcoming },
     { value: "completed", label: l(DASH.status.completed), count: child.stats.completed },
+    ...(child.stats.missed > 0
+      ? [{ value: "missed" as const, label: l(DASH.status.missed), count: child.stats.missed }]
+      : []),
   ];
 
   return (
@@ -137,6 +151,15 @@ export function ChildSchedule({ items, onChange }: Props) {
               />
             </div>
             <NativeSelect
+              aria-label={l(DASH.schedule.allTypes)}
+              value={type}
+              onChange={(e) => setType(e.target.value as TypeFilter)}
+            >
+              <option value="all">{l(DASH.schedule.allTypes)}</option>
+              <option value="government">{l(DASH.type.government)}</option>
+              <option value="private">{l(DASH.type.private)}</option>
+            </NativeSelect>
+            <NativeSelect
               aria-label={l(DASH.schedule.vaccinesLabel)}
               value={vaccine}
               onChange={(e) => setVaccine(e.target.value)}
@@ -165,7 +188,7 @@ export function ChildSchedule({ items, onChange }: Props) {
           <div className="flex flex-col gap-1.5">
             <ProgressBar value={child.stats.percent} />
             <p className="text-xs text-muted-foreground">
-              {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total })} ({child.stats.percent}%)
+              {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total - child.stats.missed })} ({child.stats.percent}%)
             </p>
           </div>
         </CardContent>
@@ -176,10 +199,11 @@ export function ChildSchedule({ items, onChange }: Props) {
       ) : (
         <ul className="flex flex-col gap-2">
           {filtered.map((d) => (
-            <li key={d.code} className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between">
+            <li key={d.code} className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <p className="font-medium">
+                <p className="flex flex-wrap items-center gap-2 font-medium">
                   {d.name} · {fill(l(DASH.schedule.dose), { n: d.doseNumber })}
+                  <Badge variant="outline" className="text-[10px]">{l(DASH.type[d.type])}</Badge>
                 </p>
                 <p className="text-xs text-muted-foreground">{l(VACCINES[d.vaccine].protects)}</p>
                 <p className={cn("mt-1 text-xs", d.status === "due" && "font-medium text-destructive")}>{note(d)}</p>

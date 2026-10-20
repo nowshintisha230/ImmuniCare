@@ -12,6 +12,8 @@ import {
 import { firebaseAuth } from "@/lib/firebase-client";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
+import type { RecordInput } from "@/lib/vaccination/records";
+
 
 async function createServerSession(idToken: string) {
   const res = await fetch("/api/auth/session", {
@@ -22,7 +24,7 @@ async function createServerSession(idToken: string) {
   if (!res.ok) throw new Error("session-failed");
 }
 
-export async function registerWithEmail(input: RegisterInput) {
+export async function registerWithEmail(input: RegisterInput, records: RecordInput[] = []) {
   const { password, ...profile } = input;
   const cred = await createUserWithEmailAndPassword(firebaseAuth, profile.email, password);
 
@@ -32,16 +34,15 @@ export async function registerWithEmail(input: RegisterInput) {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...profile, idToken }),
+      body: JSON.stringify({ ...profile, records, idToken }),
     });
     if (!res.ok) throw new Error("register-failed");
   } catch (error) {
-    // roll back so the email is not left half-registered
+    
     await deleteUser(cred.user).catch(() => {});
     throw error;
   }
 }
-
 export async function loginWithEmail({ email, password }: LoginInput) {
   const cred = await signInWithEmailAndPassword(firebaseAuth, email, password);
   await createServerSession(await cred.user.getIdToken());

@@ -11,9 +11,13 @@ import { formatDateKey } from "@/lib/format";
 import { AddChildForm } from "./add-child-form";
 import { ProgressBar } from "./progress-bar";
 
-type Props = { items: ChildView[]; onChange: () => void | Promise<void> };
+type Props = {
+  items: ChildView[];
+  onChange: () => void | Promise<void>;
+  onAdded?: () => void | Promise<void>;
+};
 
-export function ChildrenTab({ items, onChange }: Props) {
+export function ChildrenTab({ items, onChange, onAdded }: Props) {
   const { t, l, language } = useLanguage();
 
   async function remove(child: ChildView) {
@@ -62,14 +66,14 @@ export function ChildrenTab({ items, onChange }: Props) {
                 </div>
                 <ProgressBar value={child.stats.percent} />
                 <p className="text-xs text-muted-foreground">
-                  {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total })} ({child.stats.percent}%)
+                  {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total - child.stats.missed })} ({child.stats.percent}%)
                 </p>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
-      <AddChildForm onAdded={onChange} />
+      <AddChildForm onAdded={onAdded ?? onChange} />
     </div>
   );
 }

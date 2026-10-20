@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell } from "lucide-react";
+import { AlertTriangle, Bell } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/providers/language-provider";
 import { DASH, fill } from "@/lib/content/dashboard";
 import type { NotificationView } from "@/lib/dashboard/types";
@@ -20,6 +21,29 @@ export function NotificationList({ items, limit }: Props) {
   return (
     <ul className="flex flex-col gap-2">
       {shown.map((n) => {
+        if (n.kind === "overdue") {
+          const template = n.doseType === "government" ? DASH.notifications.overdueGov : DASH.notifications.overduePriv;
+          const text = fill(l(template), {
+            child: n.childName,
+            count: n.count,
+            vaccines: n.vaccines.join(", "),
+          });
+          return (
+            <li
+              key={n.id}
+              className={cn(
+                "flex items-start gap-3 rounded-lg border p-3 text-sm",
+                n.doseType === "government" ? "border-destructive/40 bg-destructive/5" : "border-amber-300/60 bg-amber-50 dark:bg-amber-950/30",
+              )}
+            >
+              <AlertTriangle
+                className={cn("mt-0.5 size-4 shrink-0", n.doseType === "government" ? "text-destructive" : "text-amber-600")}
+              />
+              <p>{text}</p>
+            </li>
+          );
+        }
+
         const template = n.daysUntil === 0 ? DASH.notifications.today : DASH.notifications.soon;
         const text = fill(l(template), {
           vaccine: n.vaccine,
@@ -30,8 +54,11 @@ export function NotificationList({ items, limit }: Props) {
         return (
           <li key={n.id} className="flex items-start gap-3 rounded-lg border p-3 text-sm">
             <Bell className={cn("mt-0.5 size-4 shrink-0", n.daysUntil === 0 ? "text-destructive" : "text-primary")} />
-            <div>
-              <p>{text}</p>
+            <div className="min-w-0">
+              <p>
+                {text}{" "}
+                {n.optional && <Badge variant="outline" className="ml-1 align-middle text-[10px]">{l(DASH.notifications.optional)}</Badge>}
+              </p>
               <p className="text-xs text-muted-foreground">{formatDateKey(n.dueDate, language)}</p>
             </div>
           </li>

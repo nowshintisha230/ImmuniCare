@@ -10,6 +10,7 @@ const STYLES: Record<DoseStatus, string> = {
   completed: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
   due: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
   upcoming: "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300",
+  missed: "bg-muted text-muted-foreground",
 };
 
 export function StatusBadge({ status }: { status: DoseStatus }) {
