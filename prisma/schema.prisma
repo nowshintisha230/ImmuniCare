@@ -36,3 +36,14 @@ model Child {
 
   @@index([parentId])
 }
+model Feedback {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Int
+  message   String
+  approved  Boolean  @default(false)
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([approved, createdAt])
+}
