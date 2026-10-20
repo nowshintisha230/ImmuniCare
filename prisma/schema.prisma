@@ -25,14 +25,15 @@ model User {
 }
 
 model Child {
-  id          String   @id @default(cuid())
+  id          String              @id @default(cuid())
   name        String
   dateOfBirth DateTime
   sex         Sex
   parentId    String
-  parent      User     @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  parent      User                @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  records     VaccinationRecord[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
   @@index([parentId])
 }
@@ -46,4 +47,15 @@ model Feedback {
   createdAt DateTime @default(now())
 
   @@index([approved, createdAt])
+}
+model VaccinationRecord {
+  id        String   @id @default(cuid())
+  childId   String
+  child     Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  doseCode  String
+  givenAt   DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([childId, doseCode])
+  @@index([childId])
 }

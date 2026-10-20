@@ -1,0 +1,100 @@
+import type { Localized } from "./types";
+
+const L = (en: string, bn: string): Localized => ({ en, bn });
+
+export function fill(text: string, vars: Record<string, string | number>) {
+  return text.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? ""));
+}
+
+export const DASH = {
+  title: L("Dashboard", "ড্যাশবোর্ড"),
+  welcome: L("Welcome, {name}", "স্বাগতম, {name}"),
+  subtitle: L("Track your children's vaccinations in one place.", "এক জায়গায় আপনার সন্তানদের টিকার হিসাব রাখুন।"),
+  loadFailed: L("Could not load your dashboard.", "ড্যাশবোর্ড লোড করা যায়নি।"),
+  retry: L("Try again", "আবার চেষ্টা করুন"),
+  tabs: {
+    overview: L("Overview", "সারসংক্ষেপ"),
+    schedule: L("Vaccine schedule", "টিকার সময়সূচি"),
+    notifications: L("Notifications", "নোটিফিকেশন"),
+    children: L("My children", "আমার সন্তান"),
+    feedback: L("My feedback", "আমার মতামত"),
+    profile: L("Profile", "প্রোফাইল"),
+  },
+  stats: {
+    children: L("Children", "সন্তান"),
+    totalVaccines: L("Total vaccines", "মোট টিকা"),
+    totalDoses: L("Total doses", "মোট ডোজ"),
+    completed: L("Completed", "সম্পন্ন"),
+    due: L("Due", "সময় হয়েছে"),
+    upcoming: L("Upcoming", "আসন্ন"),
+  },
+  status: {
+    completed: L("Completed", "সম্পন্ন"),
+    due: L("Due", "সময় হয়েছে"),
+    upcoming: L("Upcoming", "আসন্ন"),
+  },
+  overview: {
+    progress: L("Overall vaccination progress", "সামগ্রিক টিকাদান অগ্রগতি"),
+    doses: L("{done} of {total} doses completed", "{total} ডোজের মধ্যে {done} সম্পন্ন"),
+    reminders: L("Reminders", "রিমাইন্ডার"),
+    viewAll: L("View all", "সব দেখুন"),
+    childProgress: L("Progress by child", "সন্তান অনুযায়ী অগ্রগতি"),
+    emptyTitle: L("No child added yet", "এখনো কোনো সন্তান যোগ করা হয়নি"),
+    emptyText: L("Add your child to see the vaccine schedule and progress.", "টিকার সময়সূচি ও অগ্রগতি দেখতে আপনার সন্তানকে যোগ করুন।"),
+    addChild: L("Add a child", "সন্তান যোগ করুন"),
+  },
+  schedule: {
+    child: L("Child", "সন্তান"),
+    search: L("Search vaccine or disease...", "টিকা বা রোগের নাম খুঁজুন..."),
+    all: L("All", "সব"),
+    allVaccines: L("All vaccines", "সব টিকা"),
+    none: L("No doses match your search.", "আপনার খোঁজে কোনো ডোজ মেলেনি।"),
+    dose: L("Dose {n}", "ডোজ {n}"),
+    givenOn: L("Given on {date}", "দেওয়া হয়েছে {date}"),
+    dueToday: L("Due today", "আজ দেওয়ার দিন"),
+    overdueBy: L("Overdue by {days} day(s) (due {date})", "{days} দিন দেরি (নির্ধারিত {date})"),
+    dueIn: L("Due {date} (in {days} days)", "নির্ধারিত {date} ({days} দিন পরে)"),
+    markGiven: L("Mark given", "দেওয়া হয়েছে"),
+    undo: L("Undo", "বাতিল"),
+    confirm: L("Confirm", "নিশ্চিত"),
+    cancel: L("Cancel", "বাতিল"),
+    dateHint: L("Date given (blank = today)", "তারিখ (ফাঁকা = আজ)"),
+    badDate: L("Invalid date. It cannot be in the future or before birth.", "তারিখ সঠিক নয়। ভবিষ্যতের বা জন্মের আগের তারিখ হবে না।"),
+    saved: L("Dose saved", "ডোজ সংরক্ষিত হয়েছে"),
+    removed: L("Dose record removed", "ডোজের রেকর্ড মুছে ফেলা হয়েছে"),
+    vaccinesLabel: L("Vaccine", "টিকা"),
+  },
+  notifications: {
+    empty: L("No reminders. Nothing is due in the next 3 days.", "কোনো রিমাইন্ডার নেই। আগামী ৩ দিনে কিছু বাকি নেই।"),
+    today: L("{vaccine} dose {n} for {child} is due today.", "আজ {child}-এর {vaccine} টিকার {n} নম্বর ডোজ দেওয়ার দিন।"),
+    soon: L("{vaccine} dose {n} for {child} is due in {days} day(s).", "{child}-এর {vaccine} টিকার {n} নম্বর ডোজ {days} দিন পরে।"),
+    hint: L("You are reminded 3 days before and on the day a dose is due.", "ডোজের ৩ দিন আগে এবং নির্ধারিত দিনে আপনাকে মনে করানো হয়।"),
+  },
+  children: {
+    add: L("Add a child", "সন্তান যোগ করুন"),
+    save: L("Add child", "সন্তান যোগ করুন"),
+    saving: L("Adding...", "যোগ হচ্ছে..."),
+    added: L("Child added", "সন্তান যোগ করা হয়েছে"),
+    limit: L("You can add up to 10 children.", "সর্বোচ্চ ১০ জন সন্তান যোগ করা যাবে।"),
+    delete: L("Delete", "মুছুন"),
+    deleteConfirm: L("Delete this child and all vaccine records?", "এই সন্তান ও সব টিকার রেকর্ড মুছে ফেলবেন?"),
+    deleted: L("Child deleted", "সন্তান মুছে ফেলা হয়েছে"),
+    months: L("{n} month(s) old", "বয়স {n} মাস"),
+    years: L("{n} year(s) old", "বয়স {n} বছর"),
+    born: L("Born {date}", "জন্ম {date}"),
+    empty: L("No children yet.", "এখনো কোনো সন্তান নেই।"),
+  },
+  feedback: {
+    approved: L("Published", "প্রকাশিত"),
+    pending: L("Pending review", "রিভিউয়ের অপেক্ষায়"),
+    empty: L("You have not sent any feedback yet.", "আপনি এখনো কোনো মতামত পাঠাননি।"),
+    write: L("Write feedback", "মতামত লিখুন"),
+  },
+  profile: {
+    title: L("Your profile", "আপনার প্রোফাইল"),
+    emailLocked: L("Email cannot be changed.", "ইমেইল পরিবর্তন করা যাবে না।"),
+    save: L("Save changes", "পরিবর্তন সংরক্ষণ করুন"),
+    saving: L("Saving...", "সংরক্ষণ হচ্ছে..."),
+    saved: L("Profile updated", "প্রোফাইল আপডেট হয়েছে"),
+  },
+};
