@@ -1,11 +1,12 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { useLanguage } from "@/components/providers/language-provider";
-import { DASH } from "@/lib/content/dashboard";
+import { DASH, fill } from "@/lib/content/dashboard";
+import type { Localized } from "@/lib/content/types";
 import { VACCINES, type VaccineKey } from "@/lib/content/vaccine-info";
 import { VACCINE_ORDER, VACCINE_TYPE } from "@/lib/vaccination/doses";
 import { dosesOfVaccine, type RecordInput } from "@/lib/vaccination/records";
@@ -16,6 +17,11 @@ export type RecordsValue = { enabled: boolean; rows: RecordRow[] };
 
 export const EMPTY_RECORDS: RecordsValue = { enabled: false, rows: [] };
 
+const PICK_FIRST: Localized = {
+  en: "Select a vaccine first",
+  bn: "আগে টিকা বেছে নিন",
+};
+
 const newRow = (rows: RecordRow[]): RecordRow => ({
   id: rows.reduce((max, r) => Math.max(max, r.id), 0) + 1,
   vaccine: "",
@@ -23,7 +29,7 @@ const newRow = (rows: RecordRow[]): RecordRow => ({
   date: "",
 });
 
-
+/** Rows the parent actually filled (fully empty rows are ignored). */
 export function collectRecords(value: RecordsValue): RecordInput[] {
   return value.rows
     .filter((r) => r.vaccine || r.date)
@@ -63,6 +69,25 @@ export function InitialRecordsField({ value, onChange, dob, todayKey, error }: P
     onChange({ ...value, rows: rows.length ? rows : [newRow([])] });
   }
 
+  /** Dose codes already picked in other rows, so the same dose cannot be added twice. */
+  function usedElsewhere(rowId: number) {
+    return new Set(
+      value.rows
+        .filter((r) => r.id !== rowId && r.vaccine && r.dose)
+        .map((r) => `${r.vaccine}-${r.dose}`),
+    );
+  }
+
+  function pickVaccine(row: RecordRow, vaccine: VaccineKey | "") {
+    if (!vaccine) {
+      updateRow(row.id, { vaccine: "", dose: "" });
+      return;
+    }
+    const used = usedElsewhere(row.id);
+    const free = dosesOfVaccine(vaccine).find((d) => !used.has(d.code));
+    updateRow(row.id, { vaccine, dose: free ? String(free.doseNumber) : "" });
+  }
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4">
       <p className="text-sm font-medium">{l(DASH.records.question)}</p>
@@ -95,71 +120,89 @@ export function InitialRecordsField({ value, onChange, dob, todayKey, error }: P
         <div className="flex flex-col gap-3">
           {value.rows.map((row) => {
             const doses = row.vaccine ? dosesOfVaccine(row.vaccine) : [];
+            const used = usedElsewhere(row.id);
+
             return (
-              <div
-                key={row.id}
-                className="grid gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,1fr)_auto] sm:items-end"
-              >
-                <label className="flex flex-col gap-1 text-xs text-muted-foreground">
-                  {l(DASH.records.vaccine)}
-                  <NativeSelect
-                    className="w-full text-foreground"
-                    value={row.vaccine}
-                    onChange={(e) => {
-                      const vaccine = e.target.value as VaccineKey | "";
-                      updateRow(row.id, { vaccine, dose: vaccine ? "1" : "" });
-                    }}
+              <div key={row.id} className="flex flex-col gap-3 rounded-lg border bg-background p-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+                    {l(DASH.records.vaccine)}
+                    <NativeSelect
+                      className="w-full text-foreground"
+                      value={row.vaccine}
+                      onChange={(e) => pickVaccine(row, e.target.value as VaccineKey | "")}
+                    >
+                      <option value="">{l(DASH.records.selectVaccine)}</option>
+                      <optgroup label={l(DASH.records.groupGov)}>
+                        {GOV.map((k) => (
+                          <option key={k} value={k}>{VACCINES[k].name}</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label={l(DASH.records.groupPriv)}>
+                        {PRIV.map((k) => (
+                          <option key={k} value={k}>{VACCINES[k].name}</option>
+                        ))}
+                      </optgroup>
+                    </NativeSelect>
+                  </label>
+
+                  <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+                    {l(DASH.records.date)}
+                    <Input
+                      type="date"
+                      className="h-9 text-foreground"
+                      min={dob || undefined}
+                      max={todayKey}
+                      value={row.date}
+                      onChange={(e) => updateRow(row.id, { date: e.target.value })}
+                    />
+                  </label>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2" role="group" aria-label={l(DASH.records.dose)}>
+                    <span className="text-xs text-muted-foreground">{l(DASH.records.dose)}:</span>
+
+                    {row.vaccine ? (
+                      doses.map((d) => {
+                        const selected = row.dose === String(d.doseNumber);
+                        const taken = used.has(d.code);
+                        return (
+                          <button
+                            key={d.code}
+                            type="button"
+                            aria-pressed={selected}
+                            disabled={taken}
+                            onClick={() => updateRow(row.id, { dose: String(d.doseNumber) })}
+                            className={cn(
+                              "inline-flex min-h-9 items-center gap-1 rounded-full border px-3 text-sm font-medium transition-colors",
+                              selected
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "bg-background hover:bg-muted",
+                              taken && "cursor-not-allowed opacity-40 line-through",
+                            )}
+                          >
+                            {selected && <Check className="size-3.5" />}
+                            {fill(l(DASH.schedule.dose), { n: d.doseNumber })}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <span className="text-xs text-muted-foreground">{l(PICK_FIRST)}</span>
+                    )}
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    aria-label={l(DASH.records.remove)}
+                    onClick={() => removeRow(row.id)}
                   >
-                    <option value="">{l(DASH.records.selectVaccine)}</option>
-                    <optgroup label={l(DASH.records.groupGov)}>
-                      {GOV.map((k) => (
-                        <option key={k} value={k}>{VACCINES[k].name}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label={l(DASH.records.groupPriv)}>
-                      {PRIV.map((k) => (
-                        <option key={k} value={k}>{VACCINES[k].name}</option>
-                      ))}
-                    </optgroup>
-                  </NativeSelect>
-                </label>
-
-                <label className="flex flex-col gap-1 text-xs text-muted-foreground">
-                  {l(DASH.records.dose)}
-                  <NativeSelect
-                    className="w-full text-foreground"
-                    value={row.dose}
-                    disabled={!row.vaccine}
-                    onChange={(e) => updateRow(row.id, { dose: e.target.value })}
-                  >
-                    <option value="">{l(DASH.records.selectDose)}</option>
-                    {doses.map((d) => (
-                      <option key={d.code} value={d.doseNumber}>{d.doseNumber}</option>
-                    ))}
-                  </NativeSelect>
-                </label>
-
-                <label className="flex flex-col gap-1 text-xs text-muted-foreground">
-                  {l(DASH.records.date)}
-                  <Input
-                    type="date"
-                    className="h-9 text-foreground"
-                    min={dob || undefined}
-                    max={todayKey}
-                    value={row.date}
-                    onChange={(e) => updateRow(row.id, { date: e.target.value })}
-                  />
-                </label>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={l(DASH.records.remove)}
-                  onClick={() => removeRow(row.id)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+                    <Trash2 className="size-4" />
+                    {l(DASH.records.remove)}
+                  </Button>
+                </div>
               </div>
             );
           })}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedbackForm } from "@/components/feedback/feedback-form";
 import { Stars } from "@/components/feedback/stars";
@@ -15,18 +15,25 @@ export function FeedbackSection() {
   const [items, setItems] = useState<Item[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/feedback")
-      .then((r) => (r.ok ? r.json() : []))
-      .then(setItems)
-      .catch(() => {})
-      .finally(() => setLoaded(true));
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/feedback", { cache: "no-store" });
+      setItems(res.ok ? await res.json() : []);
+    } catch {
+      // keep the previous list
+    } finally {
+      setLoaded(true);
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <Section id="feedback" title={SECTIONS.feedback.title} subtitle={SECTIONS.feedback.subtitle}>
       <div className="mx-auto w-full max-w-xl">
-        <FeedbackForm />
+        <FeedbackForm onSubmitted={load} />
       </div>
 
       {loaded && items.length === 0 && (

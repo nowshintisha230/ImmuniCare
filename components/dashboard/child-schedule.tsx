@@ -1,5 +1,5 @@
 "use client";
-
+import { RecordDownloadButton } from "./record-download-button";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
@@ -187,11 +187,14 @@ export function ChildSchedule({ items, onChange, initialChildId, initialStatus =
             ))}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <ProgressBar value={child.stats.percent} />
-            <p className="text-xs text-muted-foreground">
-              {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total - child.stats.missed })} ({child.stats.percent}%)
-            </p>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="flex min-w-48 flex-1 flex-col gap-1.5">
+              <ProgressBar value={child.stats.percent} />
+              <p className="text-xs text-muted-foreground">
+                {fill(l(DASH.overview.doses), { done: child.stats.completed, total: child.stats.total - child.stats.missed })} ({child.stats.percent}%)
+              </p>
+            </div>
+            <RecordDownloadButton childId={child.id} />
           </div>
         </CardContent>
       </Card>

@@ -6,12 +6,11 @@ import { feedbackSchema } from "@/lib/validations/feedback";
 export async function GET() {
   await connection();
   const items = await prisma.feedback.findMany({
-    where: { approved: true },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: 9,
     select: { id: true, name: true, rating: true, message: true },
   });
-  return NextResponse.json(items);
+  return NextResponse.json(items, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(req: Request) {
@@ -20,9 +19,18 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
+
+    // simple flood guard: no more than 10 feedbacks per minute for the whole site
+    const recent = await prisma.feedback.count({
+      where: { createdAt: { gte: new Date(Date.now() - 60_000) } },
+    });
+    if (recent >= 10) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const user = await getCurrentUser();
     await prisma.feedback.create({
-      data: { ...parsed.data, userId: user?.id ?? null },
+      data: { ...parsed.data, approved: true, userId: user?.id ?? null },
     });
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch {

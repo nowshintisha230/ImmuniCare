@@ -142,9 +142,9 @@ export const FEEDBACK_TEXT = {
   message: { en: "Your feedback", bn: "আপনার মতামত" } as Localized,
   submit: { en: "Submit feedback", bn: "মতামত পাঠান" } as Localized,
   sending: { en: "Sending...", bn: "পাঠানো হচ্ছে..." } as Localized,
-  thanks: {
-    en: "Thank you! Your feedback will appear after review.",
-    bn: "ধন্যবাদ! রিভিউয়ের পর আপনার মতামত দেখানো হবে।",
+    thanks: {
+    en: "Thank you! Your feedback is now live on the home page.",
+    bn: "ধন্যবাদ! আপনার মতামত এখন হোম পেজে দেখা যাচ্ছে।",
   } as Localized,
   failed: { en: "Could not send feedback. Try again.", bn: "মতামত পাঠানো যায়নি। আবার চেষ্টা করুন।" } as Localized,
   invalid: {

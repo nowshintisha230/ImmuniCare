@@ -140,3 +140,23 @@ html {
   -webkit-mask-image: linear-gradient(to bottom, black, transparent);
   mask-image: linear-gradient(to bottom, black, transparent);
 }
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  header,
+  footer,
+  [data-sonner-toaster],
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .print-exact,
+  .print-exact * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

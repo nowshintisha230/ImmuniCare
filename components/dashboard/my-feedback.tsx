@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedbackForm } from "@/components/feedback/feedback-form";
 import { Stars } from "@/components/feedback/stars";
@@ -21,12 +20,7 @@ export function MyFeedback({ items, onChange }: Props) {
         {items.map((f) => (
           <Card key={f.id}>
             <CardContent className="flex flex-col gap-2 pt-6">
-              <div className="flex items-center justify-between gap-2">
-                <Stars value={f.rating} />
-                <Badge variant={f.approved ? "default" : "secondary"}>
-                  {f.approved ? l(DASH.feedback.approved) : l(DASH.feedback.pending)}
-                </Badge>
-              </div>
+              <Stars value={f.rating} />
               <p className="text-sm">{f.message}</p>
               <p className="text-xs text-muted-foreground">{formatDateKey(f.createdAt.slice(0, 10), language)}</p>
             </CardContent>

@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -20,8 +19,10 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4 px-4">
         <Logo />
 
-        <NavLinks className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5" />
 
+                <Suspense fallback={null}>
+          <NavLinks className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5" />
+        </Suspense>
         <div className="flex shrink-0 items-center gap-2">
           <LanguageToggle />
           <UserActions />
@@ -45,11 +46,13 @@ export function Navbar() {
             <SheetTitle>{t("ui.menu")}</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-6 px-4">
-            <NavLinks
-              className="flex flex-col gap-4"
-              linkClassName="text-base"
-              onNavigate={() => setOpen(false)}
-            />
+                        <Suspense fallback={null}>
+              <NavLinks
+                className="flex flex-col gap-4"
+                linkClassName="text-base"
+                onNavigate={() => setOpen(false)}
+              />
+            </Suspense>
             <GuestActions className="flex flex-col gap-2" onNavigate={() => setOpen(false)} />
           </div>
         </SheetContent>

@@ -1,5 +1,5 @@
 "use client";
-
+import { RecordDownloadButton } from "./record-download-button";
 import { CalendarClock, CheckCircle2, Clock, Layers, Syringe } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,6 +47,7 @@ export function ChildOverviewCard({ child }: { child: ChildView }) {
               {fill(l(DASH.overview.ageLine), { age: formatAge(child.age, language) })}
             </p>
           </div>
+          <RecordDownloadButton childId={child.id} compact />
           <p className="text-2xl font-bold text-primary">{stats.percent}%</p>
         </div>
 

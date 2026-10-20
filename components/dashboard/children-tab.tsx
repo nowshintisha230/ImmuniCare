@@ -1,5 +1,5 @@
 "use client";
-
+import { RecordDownloadButton } from "./record-download-button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -54,15 +54,18 @@ export function ChildrenTab({ items, onChange, onAdded }: Props) {
                       {ageText(child.ageMonths)} · {fill(l(DASH.children.born), { date: formatDateKey(child.dateOfBirth, language) })}
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label={l(DASH.children.delete)}
-                    onClick={() => remove(child)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <RecordDownloadButton childId={child.id} compact />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={l(DASH.children.delete)}
+                      onClick={() => remove(child)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
                 </div>
                 <ProgressBar value={child.stats.percent} />
                 <p className="text-xs text-muted-foreground">
