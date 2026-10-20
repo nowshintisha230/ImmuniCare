@@ -5,10 +5,11 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useLanguage } from "@/components/providers/language-provider";
-import { AuthActions } from "./auth-actions";
+import { GuestActions } from "./guest-actions";
 import { LanguageToggle } from "./language-toggle";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
+import { UserActions } from "./user-actions";
 
 export function Navbar() {
   const { t } = useLanguage();
@@ -19,20 +20,17 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4 px-4">
         <Logo />
 
-        {/* Desktop */}
         <NavLinks className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5" />
-        <div className="hidden shrink-0 items-center gap-2 lg:flex">
-          <LanguageToggle />
-          <AuthActions className="flex items-center gap-2" />
-        </div>
 
-        {/* Mobile / tablet */}
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex shrink-0 items-center gap-2">
           <LanguageToggle />
+          <UserActions />
+          <GuestActions className="hidden items-center gap-2 lg:flex" />
           <Button
             type="button"
             variant="outline"
             size="icon"
+            className="lg:hidden"
             aria-label={t("ui.menu")}
             onClick={() => setOpen(true)}
           >
@@ -52,7 +50,7 @@ export function Navbar() {
               linkClassName="text-base"
               onNavigate={() => setOpen(false)}
             />
-            <AuthActions className="flex flex-col gap-2" onNavigate={() => setOpen(false)} />
+            <GuestActions className="flex flex-col gap-2" onNavigate={() => setOpen(false)} />
           </div>
         </SheetContent>
       </Sheet>

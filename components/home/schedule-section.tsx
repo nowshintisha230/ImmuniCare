@@ -1,55 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
-import { GOVERNMENT_SCHEDULE, PRIVATE_SCHEDULE } from "@/lib/content/epi-schedule";
-import type { VaccineType } from "@/lib/content/vaccine-catalog";
+import { CATALOG, type VaccineType } from "@/lib/content/vaccine-catalog";
+import { VACCINE_SLUGS } from "@/lib/content/vaccine-details";
 import { VACCINES } from "@/lib/content/vaccine-info";
 import { CATALOG_TEXT } from "@/lib/content/vaccine-sections";
-import { cn } from "@/lib/utils";
 import { Section } from "./section";
 import { TypeSwitch } from "./type-switch";
 
 export function ScheduleSection() {
   const { l } = useLanguage();
   const [type, setType] = useState<VaccineType>("government");
-  const stages = type === "government" ? GOVERNMENT_SCHEDULE : PRIVATE_SCHEDULE;
+  const items = CATALOG.filter((v) => v.type === type);
 
   return (
     <Section id="schedule" title={CATALOG_TEXT.schedule.title} subtitle={CATALOG_TEXT.schedule.subtitle} muted>
       <TypeSwitch value={type} onChange={setType} />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {stages.map((stage) => (
-          <Card
-            key={stage.id}
-            className={cn("border-l-4", type === "government" ? "border-l-[#006a4e]" : "border-l-amber-500")}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg">{l(stage.age)}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {stage.items.map(({ key, detail }) => (
-                <div key={key} className="flex items-start gap-3">
-                  <Badge
-                    className={cn("mt-0.5 shrink-0", type === "private" && "bg-amber-500 text-white hover:bg-amber-500")}
-                  >
+      <div className="mx-auto max-w-3xl overflow-x-auto rounded-xl border bg-card">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/60 text-left">
+            <tr>
+              <th className="px-4 py-3 font-semibold">{l(CATALOG_TEXT.labels.vaccine)}</th>
+              <th className="px-4 py-3 font-semibold">{l(CATALOG_TEXT.labels.when)}</th>
+              <th className="px-4 py-3 font-semibold">{l(CATALOG_TEXT.labels.doses)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map(({ key, when, doses }) => (
+              <tr key={key} className="border-t align-top">
+                <td className="px-4 py-3 font-medium">
+                  <Link href={`/vaccines/${VACCINE_SLUGS[key]}`} className="hover:text-primary hover:underline">
                     {VACCINES[key].name}
-                  </Badge>
-                  <div className="min-w-0">
-                    <p className="text-sm text-muted-foreground">{l(VACCINES[key].protects)}</p>
-                    {detail && <p className="mt-0.5 text-xs font-medium">{l(detail)}</p>}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
+                  </Link>
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">{l(when)}</td>
+                <td className="px-4 py-3 text-muted-foreground">{l(doses)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <p className="mx-auto mt-6 max-w-3xl text-center text-sm text-muted-foreground">
+      <p className="mx-auto mt-5 max-w-3xl text-center text-sm text-muted-foreground">
         {l(CATALOG_TEXT.notes[type])}
       </p>
     </Section>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,15 @@ import { NotificationList } from "./notification-list";
 import { ProfileForm } from "./profile-form";
 import { ProgressBar } from "./progress-bar";
 import { StatsCards } from "./stats-cards";
+
+const TABS = ["overview", "schedule", "notifications", "children", "feedback", "profile"];
+
+function isTab(value: string | null): value is string {
+  return value !== null && TABS.includes(value);
+}
+
+
+
 
 function DashboardSkeleton() {
   return (
@@ -34,7 +44,13 @@ function DashboardSkeleton() {
 export function DashboardClient() {
   const { l } = useLanguage();
   const { data, loading, error, reload } = useDashboard();
-  const [tab, setTab] = useState("overview");
+    const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [tab, setTab] = useState(isTab(tabParam) ? tabParam : "overview");
+
+  useEffect(() => {
+    if (isTab(tabParam)) setTab(tabParam);
+  }, [tabParam]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

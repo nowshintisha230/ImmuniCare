@@ -135,3 +135,8 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .bd-float, .bd-float-slow, .bd-pulse, .bd-rise, .bd-pattern { animation: none; }
 }
+.hero-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23006a4e' stroke-opacity='.09' stroke-width='1.5'%3E%3Cpath d='M40 4 76 40 40 76 4 40Z'/%3E%3Cpath d='M40 22 58 40 40 58 22 40Z'/%3E%3Ccircle cx='40' cy='40' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  mask-image: linear-gradient(to bottom, black, transparent);
+}

@@ -11,10 +11,10 @@ export const CATALOG_TEXT = {
     ),
   },
   schedule: {
-    title: L("Vaccine schedule", "ভ্যাকসিন সময়সূচি"),
+    title: L("Vaccine schedule at a glance", "এক নজরে টিকার সময়সূচি"),
     subtitle: L(
-      "A simple timeline from birth. Pick government or private vaccines.",
-      "জন্ম থেকে সহজ টাইমলাইন। সরকারি বা প্রাইভেট টিকা বেছে নিন।",
+      "Vaccine name, time and number of doses.",
+      "টিকার নাম, সময় ও ডোজ সংখ্যা।",
     ),
   },
   types: {
@@ -26,8 +26,10 @@ export const CATALOG_TEXT = {
     private: L("Private", "প্রাইভেট"),
   },
   labels: {
+    vaccine: L("Vaccine", "টিকা"),
     when: L("When", "কখন"),
     doses: L("Doses", "ডোজ"),
+    viewDetails: L("View details", "বিস্তারিত দেখুন"),
   },
   notes: {
     government: L(

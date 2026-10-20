@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/components/providers/language-provider";
 import { CATALOG, type VaccineType } from "@/lib/content/vaccine-catalog";
-import { CATALOG_TEXT } from "@/lib/content/vaccine-sections";
+import { VACCINE_SLUGS } from "@/lib/content/vaccine-details";
 import { VACCINES } from "@/lib/content/vaccine-info";
+import { CATALOG_TEXT } from "@/lib/content/vaccine-sections";
 import { cn } from "@/lib/utils";
 import { Section } from "./section";
 import { TypeSwitch } from "./type-switch";
@@ -41,7 +44,7 @@ export function CategoriesSection() {
                   <span
                     className={cn(
                       "flex size-11 items-center justify-center rounded-full",
-                      type === "government" ? "bg-[#006a4e]/10 text-[#006a4e] dark:text-emerald-400" : "bg-amber-500/10 text-amber-600",
+                      type === "government" ? "bg-primary/10 text-primary" : "bg-amber-500/10 text-amber-600",
                     )}
                   >
                     <Icon className="size-5" />
@@ -51,7 +54,7 @@ export function CategoriesSection() {
                 <CardTitle className="text-lg">{vaccine.name}</CardTitle>
                 <CardDescription>{l(vaccine.protects)}</CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-2 text-sm">
+              <CardContent className="flex h-full flex-col gap-2 text-sm">
                 <Badge variant="secondary" className="w-fit">{l(CATALOG_TEXT.badge[type])}</Badge>
                 <p>
                   <span className="text-muted-foreground">{l(CATALOG_TEXT.labels.when)}: </span>
@@ -62,6 +65,12 @@ export function CategoriesSection() {
                   {l(doses)}
                 </p>
                 {note && <p className="text-xs text-muted-foreground">{l(note)}</p>}
+                <Link
+                  href={`/vaccines/${VACCINE_SLUGS[key]}`}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-auto w-full")}
+                >
+                  {l(CATALOG_TEXT.labels.viewDetails)}
+                </Link>
               </CardContent>
             </Card>
           );
