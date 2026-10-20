@@ -12,12 +12,16 @@ export const VACCINES = {
     },
   },
   OPV: { name: "OPV", protects: { en: "Polio (oral)", bn: "পোলিও (মুখে খাওয়ার)" } },
-  IPV: { name: "IPV", protects: { en: "Polio (injection)", bn: "পোলিও (ইনজেকশন)" } },
+  IPV: { name: "IPV / fIPV", protects: { en: "Polio (injection)", bn: "পোলিও (ইনজেকশন)" } },
   PCV: { name: "PCV", protects: { en: "Pneumonia", bn: "নিউমোনিয়া" } },
   MR: { name: "MR", protects: { en: "Measles and rubella", bn: "হাম ও রুবেলা" } },
   TCV: { name: "TCV", protects: { en: "Typhoid", bn: "টাইফয়েড" } },
+  ROTA: { name: "Rotavirus", protects: { en: "Severe rotavirus diarrhoea", bn: "রোটাভাইরাস ডায়রিয়া" } },
+  HEPA: { name: "Hepatitis A", protects: { en: "Hepatitis A (jaundice)", bn: "হেপাটাইটিস এ (জন্ডিস)" } },
+  VAR: { name: "Varicella", protects: { en: "Chickenpox", bn: "জলবসন্ত (চিকেন পক্স)" } },
+  FLU: { name: "Influenza", protects: { en: "Seasonal flu", bn: "মৌসুমি ফ্লু" } },
+  MMR: { name: "MMR", protects: { en: "Measles, mumps and rubella", bn: "হাম, মাম্পস ও রুবেলা" } },
   HPV: { name: "HPV", protects: { en: "Cervical cancer", bn: "জরায়ুমুখ ক্যান্সার" } },
-  TD: { name: "Td", protects: { en: "Tetanus", bn: "ধনুষ্টংকার" } },
 } satisfies Record<string, ScheduleVaccine>;
 
 export type VaccineKey = keyof typeof VACCINES;
