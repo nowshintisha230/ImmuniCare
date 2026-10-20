@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { DashboardData } from "@/lib/dashboard/types";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase-client";
+
 
 export function useDashboard() {
   const router = useRouter();
@@ -14,11 +17,11 @@ export function useDashboard() {
     try {
       const res = await fetch("/api/dashboard", { cache: "no-store" });
       if (res.status === 401) {
-        // clear a stale cookie first, otherwise proxy.ts bounces /login back to /dashboard
-        await fetch("/api/auth/session", { method: "DELETE" }).catch(() => {});
-        router.replace("/login");
-        return;
-      }
+  await fetch("/api/auth/session", { method: "DELETE" }).catch(() => {});
+  await signOut(firebaseAuth).catch(() => {});
+  router.replace("/login");
+  return;
+}
       if (!res.ok) throw new Error();
       setData(await res.json());
       setError(false);
