@@ -97,7 +97,7 @@ export async function getDashboardData(user: User): Promise<DashboardData> {
   );
 
   return {
-    user: { name: user.name, email: user.email, phone: user.phone },
+        user: { name: user.name, email: user.email, phone: user.phone, emailReminders: user.emailReminders },
     children: childViews,
     notifications: [...overdueNotes, ...upcomingNotes],
     feedback: feedback.map((f) => ({

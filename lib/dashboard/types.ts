@@ -43,7 +43,7 @@ export type MyFeedbackView = {
 };
 
 export type DashboardData = {
-  user: { name: string | null; email: string; phone: string | null };
+  user: { name: string | null; email: string; phone: string | null; emailReminders: boolean };
   children: ChildView[];
   notifications: NotificationView[];
   feedback: MyFeedbackView[];

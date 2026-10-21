@@ -12,7 +12,13 @@ export async function PATCH(req: Request) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { name: parsed.data.parentName, phone: parsed.data.phone },
+    data: {
+      name: parsed.data.parentName,
+      phone: parsed.data.phone,
+      ...(typeof parsed.data.emailReminders === "boolean"
+        ? { emailReminders: parsed.data.emailReminders }
+        : {}),
+    },
   });
 
   return NextResponse.json({ ok: true });

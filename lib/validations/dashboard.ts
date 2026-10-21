@@ -8,10 +8,12 @@ export const childSchema = registerSchema.pick({
   sex: true,
 });
 
-export const profileSchema = registerSchema.pick({
-  parentName: true,
-  phone: true,
-});
+export const profileSchema = registerSchema
+  .pick({
+    parentName: true,
+    phone: true,
+  })
+  .extend({ emailReminders: z.boolean().optional() });
 
 export const markDoseSchema = z.object({
   doseCode: z.string().refine((c) => DOSE_CODES.has(c)),
